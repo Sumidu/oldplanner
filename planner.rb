@@ -13,14 +13,11 @@ LIGHT_COLOR = 'AAAAAA'
 MEDIUM_COLOR = '888888'
 DARK_COLOR   = '000000'
 DATE_LONG = "%B %-d, %Y"
-OSX_FONT_PATH = "/System/Library/Fonts/Supplemental/Futura.ttc"
+OSX_FONT_PATH = "/System/Library/Fonts/HelveticaNeue.ttc"
 FILE_NAME = "time_block_pages.pdf"
 # Order is top, right, bottom, left
 LEFT_PAGE_MARGINS = [36, 72, 36, 36]
 RIGHT_PAGE_MARGINS = [36, 36, 36, 72]
-
-# Names by day of week 0 is Sunday.
-OOOS_BY_WDAY = [nil, nil, ['Juan'], ['Kelly'], nil, ['Alex', 'Edna'], nil]
 
 # From https://stackoverflow.com/a/24753003/203673
 #
@@ -118,7 +115,7 @@ end
 
 def begin_new_page side
   margin = side == :left ? LEFT_PAGE_MARGINS : RIGHT_PAGE_MARGINS
-  start_new_page size: 'LETTER', layout: :portrait, margin: margin
+  start_new_page size: 'A4', layout: :portrait, margin: margin
   if side == :right
     hole_punches
   end
@@ -157,18 +154,18 @@ def week_ahead_page first_day, last_day
 
   # Header Left
   grid([0, first_column],[0, last_column]).bounding_box do
-    text "The Week Ahead", inline_format: true, size: 20, align: :left
+    text "The Week Ahead", inline_format: true, size: 20, character_spacing: -0.75, style: :bold, align: :left
   end
   grid([1, first_column],[1, last_column]).bounding_box do
     range = "#{first_day.strftime('%A, %B %-d')} — #{last_day.strftime('%A, %B %-d, %Y')}"
-    text range, color: MEDIUM_COLOR, align: :left
+    text range, color: MEDIUM_COLOR, character_spacing: -0.25, align: :left
   end
   # Header Right
   grid([0, 3],[0, last_column]).bounding_box do
-    text first_day.strftime("Week %W"), inline_format: true, size: 20, align: :right
+    text first_day.strftime("Week %W"), inline_format: true, size: 20, character_spacing: -0.75, style: :bold, align: :right
   end
   grid([1, 3],[1, last_column]).bounding_box do
-    text "Quarter #{quarter(first_day)}", color: MEDIUM_COLOR, align: :right
+    text "Quarter #{quarter(first_day)}", color: MEDIUM_COLOR, character_spacing: -0.25, align: :right
   end
 
   # Horizontal lines
@@ -204,10 +201,10 @@ def daily_tasks_page date
   left_header = date.strftime(DATE_LONG) # date.strftime("Week %W")
   right_header = date.strftime("%A") # date.strftime("Day %j")
   grid([0, 0],[1, 2]).bounding_box do
-    text left_header, size: 20, align: :left
+    text left_header, size: 20, character_spacing: -0.75, style: :bold, align: :left
   end
   grid([0, 2],[1, 3]).bounding_box do
-    text right_header, size: 20, align: :right
+    text right_header, size: 20, character_spacing: -0.75, style: :bold, align: :right
   end
 
   # Daily metrics
@@ -217,27 +214,27 @@ def daily_tasks_page date
     undash
 
     translate 10, -10 do
-      text "Daily Metrics", color: MEDIUM_COLOR
+      text "Daily Metrics", color: MEDIUM_COLOR, character_spacing: -0.25
     end
 
     stroke do
       rectangle [bounds.bottom_right[0] - 20, bounds.bottom_right[1] + 20], 10, 10
     end
 
-    translate -27, 7 do
-      text "Shutdown Complete", color: MEDIUM_COLOR, align: :right, valign: :bottom
+    translate -26, 10 do
+      text "shutdown complete", color: MEDIUM_COLOR, size: 9, character_spacing: -0.25, align: :right, valign: :bottom
     end
   end
 
   # Tasks / Notes
   grid([5, 0], [5, 1]).bounding_box do
     translate 6, 0 do
-      text "Tasks:", color: DARK_COLOR, valign: :center
+      text "Tasks:", color: DARK_COLOR, character_spacing: -0.25, style: :bold, valign: :center
     end
   end
   grid([5, 2], [5, 3]).bounding_box do
     translate 6, 0 do
-      text "Notes:", color: DARK_COLOR, valign: :center
+      text "Ideas:", color: DARK_COLOR, character_spacing: -0.25, style: :bold, valign: :center
     end
   end
 
@@ -282,26 +279,26 @@ def daily_calendar_page date
   # right_header = date.strftime("Day %j")
   right_header = date.strftime("%A")
   left_subhed = date.strftime("Quarter #{quarter(date)} Week %W Day %j")
-  # right_subhed = business_days_left_in_year(date)
-  right_subhed = business_days_left_in_sprint(date)
+  right_subhed = business_days_left_in_year(date)
+  # right_subhed = business_days_left_in_sprint(date)
   grid([0, first_column],[1, 1]).bounding_box do
-    text left_header, size: 20, align: :left
+    text left_header, size: 20, character_spacing: -0.75, style: :bold, align: :left
   end
   grid([0, 2],[0, last_column]).bounding_box do
-    text right_header, size: 20, align: :right
+    text right_header, size: 20, character_spacing: -0.75, style: :bold, align: :right
   end
   grid([1, first_column],[1, last_column]).bounding_box do
-    text left_subhed, color: MEDIUM_COLOR, align: :left
+    text left_subhed, color: MEDIUM_COLOR, character_spacing: -0.25, align: :left
   end
   grid([1, first_column],[1, last_column]).bounding_box do
-    text right_subhed, color: MEDIUM_COLOR, align: :right
+    text right_subhed, color: MEDIUM_COLOR, character_spacing: -0.25, align: :right
   end
 
   # Hour labels
   (0...HOUR_COUNT).each do |hour|
     grid(hour * 2 + fist_hour_row, -1).bounding_box do
       if HOUR_LABELS[hour]
-        translate(-4, 0) { text HOUR_LABELS[hour].to_s, align: :right, valign: :center }
+        translate(-4, 0) { text HOUR_LABELS[hour].to_s, character_spacing: -0.25, align: :right, valign: :center }
       end
     end
   end
@@ -365,10 +362,10 @@ def weekend_page saturday, sunday
       left_header = date.strftime("%A")
       left_sub_header = date.strftime("%B %-d")
       grid([0, 0],[0, 1]).bounding_box do
-        text left_header, size: 20, align: :left
+        text left_header, size: 20, character_spacing: -0.25, style: :bold, align: :left
       end
       grid([1, 0],[1, 1]).bounding_box do
-        text left_sub_header, color: MEDIUM_COLOR, align: :left
+        text left_sub_header, color: MEDIUM_COLOR, character_spacing: -0.25, align: :left
       end
 
       task_start_row = header_row_count
@@ -377,7 +374,7 @@ def weekend_page saturday, sunday
       # Task lable
       grid([task_start_row, 0], [task_start_row, 1]).bounding_box do
         translate 6, 0 do
-          text "Tasks:", color: DARK_COLOR, valign: :center
+          text "Tasks:", color: DARK_COLOR, character_spacing: -0.25, style: :bold, valign: :center
         end
       end
 
@@ -427,7 +424,7 @@ def weekend_page saturday, sunday
       (0...HOUR_COUNT).each do |hour|
         grid(hour + hour_start_row + 1, -1).bounding_box do
           if HOUR_LABELS[hour]
-            translate(20, 0) { text HOUR_LABELS[hour].to_s, align: :right, valign: :center }
+            translate(20, 0) { text HOUR_LABELS[hour].to_s, character_spacing: -0.25, align: :right, valign: :center }
           end
         end
       end
@@ -435,79 +432,15 @@ def weekend_page saturday, sunday
   end
 end
 
-def one_on_one_page name, date
-  begin_new_page :right
-
-  header_row_count = 2
-  body_row_count = HOUR_COUNT * 2
-  define_grid(columns: COLUMN_COUNT, rows: header_row_count + body_row_count, gutter: 0)
-  # grid.show_all
-
-  grid([0, 0],[1, 1]).bounding_box do
-    text name, size: 20, align: :left
-  end
-  grid([1, 0],[1, 1]).bounding_box do
-    text date.strftime(DATE_LONG), color: MEDIUM_COLOR, align: :left
-  end
-  # grid([0, 2],[0, 3]).bounding_box do
-  #   text "right heading", size: 20, align: :right
-  # end
-
-  sections = {
-    2 => "Personal/Notes: <color rgb='#{MEDIUM_COLOR}'>(Spouse, children, pets, hobbies, friends, history, etc.)</color>",
-    5 => "Their Update: <color rgb='#{MEDIUM_COLOR}'>(Notes you take from their “10 minutes”)</color>",
-    14 => "My Update: <color rgb='#{MEDIUM_COLOR}'>(Notes you make to prepare for your “10 minutes”)</color>",
-    22 => "Future/Follow Up: <color rgb='#{MEDIUM_COLOR}'>(Where are they headed? Items that you will review at the next 1-on-1)</color>",
-  }
-
-  footer_start = 25
-  footer_end = 29
-
-  (2...footer_start).each do |row|
-    grid([row, 0],[row, 3]).bounding_box do
-      if sections[row]
-        text sections[row], inline_format: true, valign: :bottom
-      else
-        stroke_line bounds.bottom_left, bounds.bottom_right
-      end
-    end
-  end
-
-  grid([footer_start, 0],[footer_start, 3]).bounding_box do
-    text "Questions to Ask:", valign: :bottom, color: MEDIUM_COLOR
-  end
-  grid([footer_start + 1, 0],[footer_end, 1]).bounding_box do
-    text "• Tell me about what you’ve been working on.\n" +
-      "• Tell me about your week – what’s it been like?\n" +
-      "• Tell me about your family/weekend/activities?\n" +
-      "• Where are you on ( ) project?\n" +
-      "• Are you on track to meet the deadline?\n" +
-      "• What questions do you have about the project?\n" +
-      "• What did ( ) say about this?", size: 10, color: MEDIUM_COLOR
-  end
-  grid([footer_start + 1, 2],[footer_end, 3]).bounding_box do
-    text "• Is there anything I need to do, and if so by when?\n" +
-      "• How are you going to approach this?\n" +
-      "• What do you think you should do?\n" +
-      "• So, you’re going to do “( )” by “( )”, right?\n" +
-      "• What can you/we do differently next time?\n" +
-      "• Any ideas/suggestions/improvements?", size: 10, color: MEDIUM_COLOR
-  end
-
-  begin_new_page :left
-end
-
 Prawn::Document.generate(FILE_NAME, margin: RIGHT_PAGE_MARGINS, print_scaling: :none) do
   font_families.update(
-    'Futura' => {
-      normal: { file: OSX_FONT_PATH, font: 'Futura Medium' },
-      italic: { file: OSX_FONT_PATH, font: 'Futura Medium Italic' },
-      # bold: { file: OSX_FONT_PATH, font: 'Futura Bold' },
-      bold: { file: OSX_FONT_PATH, font: 'Futura Condensed ExtraBold' },
-      condensed: { file: OSX_FONT_PATH, font: 'Futura Condensed Medium' },
+    'Helvetica Neue' => {
+      normal: { file: OSX_FONT_PATH, font: 'Helvetica Neue Regular' },
+      italic: { file: OSX_FONT_PATH, font: 'Helvetica Neue Italic' },
+      bold: { file: OSX_FONT_PATH, font: 'Helvetica Neue Bold' },
     }
   )
-  font("Futura")
+  font("Helvetica Neue")
   stroke_color MEDIUM_COLOR
   line_width(0.5)
 
@@ -545,13 +478,6 @@ Prawn::Document.generate(FILE_NAME, margin: RIGHT_PAGE_MARGINS, print_scaling: :
     end
 
     weekend_page sunday.next_day(6), sunday.next_day(7)
-
-    OOOS_BY_WDAY.each_with_index do |names, wday|
-      next if names.nil?
-      names.each do |name|
-        one_on_one_page name, sunday.next_day(wday)
-      end
-    end
 
     sunday = sunday.next_day(7)
   end
