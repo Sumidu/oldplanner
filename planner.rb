@@ -6,7 +6,7 @@ require 'pry'
 require 'date'
 
 WEEKS = 1
-HOUR_LABELS = [nil, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, nil, nil]
+HOUR_LABELS = [nil, nil, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, nil]
 HOUR_COUNT = HOUR_LABELS.length
 COLUMN_COUNT = 4
 LIGHT_COLOR = 'AAAAAA'
@@ -15,6 +15,7 @@ DARK_COLOR   = '000000'
 DATE_LONG = "%B %-d, %Y"
 OSX_FONT_PATH = "/System/Library/Fonts/HelveticaNeue.ttc"
 FILE_NAME = "time_block_pages.pdf"
+PAGE_SIZE = "A4"
 # Order is top, right, bottom, left
 LEFT_PAGE_MARGINS = [36, 72, 36, 36]
 RIGHT_PAGE_MARGINS = [36, 36, 36, 72]
@@ -115,7 +116,7 @@ end
 
 def begin_new_page side
   margin = side == :left ? LEFT_PAGE_MARGINS : RIGHT_PAGE_MARGINS
-  start_new_page size: 'A4', layout: :portrait, margin: margin
+  start_new_page size: PAGE_SIZE, layout: :portrait, margin: margin
   if side == :right
     hole_punches
   end
