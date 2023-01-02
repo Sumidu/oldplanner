@@ -6,7 +6,7 @@ require 'pry'
 require 'date'
 
 WEEKS = 1
-HOUR_LABELS = [nil, nil, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, nil]
+HOUR_LABELS = [6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8]
 HOUR_COUNT = HOUR_LABELS.length
 COLUMN_COUNT = 4
 LIGHT_COLOR = 'AAAAAA'
@@ -15,10 +15,10 @@ DARK_COLOR   = '000000'
 DATE_LONG = "%B %-d, %Y"
 OSX_FONT_PATH = "/System/Library/Fonts/HelveticaNeue.ttc"
 FILE_NAME = "time_block_pages.pdf"
-PAGE_SIZE = "A4"
+PAGE_SIZE = "A5"
 # Order is top, right, bottom, left
-LEFT_PAGE_MARGINS = [36, 72, 36, 36]
-RIGHT_PAGE_MARGINS = [36, 36, 36, 72]
+LEFT_PAGE_MARGINS = [36, 52, 36, 36]
+RIGHT_PAGE_MARGINS = [36, 36, 36, 52]
 
 # From https://stackoverflow.com/a/24753003/203673
 #
@@ -118,7 +118,7 @@ def begin_new_page side
   margin = side == :left ? LEFT_PAGE_MARGINS : RIGHT_PAGE_MARGINS
   start_new_page size: PAGE_SIZE, layout: :portrait, margin: margin
   if side == :right
-    hole_punches
+    #hole_punches
   end
 end
 
@@ -141,7 +141,7 @@ end
 def week_ahead_page first_day, last_day
   # We don't start our own page since we don't know if this is the first week or one
   # of several weeks in a file.
-  hole_punches
+  #hole_punches
 
   header_row_count = 2
   body_row_count = HOUR_COUNT * 2
@@ -155,7 +155,7 @@ def week_ahead_page first_day, last_day
 
   # Header Left
   grid([0, first_column],[0, last_column]).bounding_box do
-    text "The Week Ahead", inline_format: true, size: 20, character_spacing: -0.75, style: :bold, align: :left
+    text "The Week Ahead", inline_format: true, size: 12, character_spacing: -0.75, style: :bold, align: :left
   end
   grid([1, first_column],[1, last_column]).bounding_box do
     range = "#{first_day.strftime('%A, %B %-d')} — #{last_day.strftime('%A, %B %-d, %Y')}"
@@ -163,7 +163,7 @@ def week_ahead_page first_day, last_day
   end
   # Header Right
   grid([0, 3],[0, last_column]).bounding_box do
-    text first_day.strftime("Week %W"), inline_format: true, size: 20, character_spacing: -0.75, style: :bold, align: :right
+    text first_day.strftime("Week %W"), inline_format: true, size: 12, character_spacing: -0.75, style: :bold, align: :right
   end
   grid([1, 3],[1, last_column]).bounding_box do
     text "Quarter #{quarter(first_day)}", color: MEDIUM_COLOR, character_spacing: -0.25, align: :right
@@ -202,10 +202,10 @@ def daily_tasks_page date
   left_header = date.strftime(DATE_LONG) # date.strftime("Week %W")
   right_header = date.strftime("%A") # date.strftime("Day %j")
   grid([0, 0],[1, 2]).bounding_box do
-    text left_header, size: 20, character_spacing: -0.75, style: :bold, align: :left
+    text left_header, size: 12, character_spacing: -0.75, style: :bold, align: :left
   end
   grid([0, 2],[1, 3]).bounding_box do
-    text right_header, size: 20, character_spacing: -0.75, style: :bold, align: :right
+    text right_header, size: 12, character_spacing: -0.75, style: :bold, align: :right
   end
 
   # Daily metrics
@@ -283,10 +283,10 @@ def daily_calendar_page date
   right_subhed = business_days_left_in_year(date)
   # right_subhed = business_days_left_in_sprint(date)
   grid([0, first_column],[1, 1]).bounding_box do
-    text left_header, size: 20, character_spacing: -0.75, style: :bold, align: :left
+    text left_header, size: 12, character_spacing: -0.75, style: :bold, align: :left
   end
   grid([0, 2],[0, last_column]).bounding_box do
-    text right_header, size: 20, character_spacing: -0.75, style: :bold, align: :right
+    text right_header, size: 12, character_spacing: -0.75, style: :bold, align: :right
   end
   grid([1, first_column],[1, last_column]).bounding_box do
     text left_subhed, color: MEDIUM_COLOR, character_spacing: -0.25, align: :left
@@ -363,7 +363,7 @@ def weekend_page saturday, sunday
       left_header = date.strftime("%A")
       left_sub_header = date.strftime("%B %-d")
       grid([0, 0],[0, 1]).bounding_box do
-        text left_header, size: 20, character_spacing: -0.25, style: :bold, align: :left
+        text left_header, size: 12, character_spacing: -0.25, style: :bold, align: :left
       end
       grid([1, 0],[1, 1]).bounding_box do
         text left_sub_header, color: MEDIUM_COLOR, character_spacing: -0.25, align: :left
