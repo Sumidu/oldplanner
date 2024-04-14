@@ -7,6 +7,9 @@ what you think.
 
 Main changes are:
 
+- Added a semester plan
+- added internationalization (german / english)
+
 - Page size (A5)
 - Margins (reduced for smaller page size)
 - Font size (down from 20 to 12 to fit the minified page size)
@@ -29,6 +32,18 @@ It assumes you want to generate pages for the next week so there are no options:
 ```
 bundle exec planner.rb
 ```
+
+To generate the summer semester use the first of april as an argument:
+```
+bundle exec planner.rb 1/04/2024
+```
+
+To generate the summer semester use the first of april as an argument:
+```
+bundle exec planner.rb 1/10/2024
+```
+
+
 
 ## Limitations
 

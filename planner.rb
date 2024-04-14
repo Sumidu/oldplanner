@@ -7,7 +7,7 @@ require 'date'
 require 'i18n'
 
 FULL_WEEKENDS = false
-WEEKS = 27
+
 HOUR_LABELS = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 HOUR_COUNT = HOUR_LABELS.length
 COLUMN_COUNT = 4
@@ -22,6 +22,7 @@ PAGE_SIZE = "A5"
 LEFT_PAGE_MARGINS = [36, 52, 36, 36]
 RIGHT_PAGE_MARGINS = [36, 36, 36, 52]
 
+weeks_const = 1
 
 I18n.load_path += Dir[File.join(__dir__, 'config', 'locales', '*.{rb,yml}')]
 I18n.available_locales = [:de, :en]
@@ -546,38 +547,41 @@ Prawn::Document.generate(FILE_NAME, margin: RIGHT_PAGE_MARGINS, print_scaling: :
     else
       date = DateTime.parse(ARGV.first).to_date
       puts "Parsed #{date.strftime('%A, %B %-d, %Y')} from arguments"
+      weeks_const = 27
       date.prev_day(date.wday)
     end
 
-  # ***  added semester planner here
+  # ***  added semester planner here only use if date is supplied
 
-  #determine if we are in summer or winter semester
-  # if the current month is between april and september we are in the summer semester
-  # if the current month is between october and march we are in the winter semester
-  semester_type = if (date.month >= 4 && date.month <= 9)
-    "summer"
-  else
-    "winter"
+ if weeks_const == 27
+    #determine if we are in summer or winter semester
+    # if the current month is between april and september we are in the summer semester
+    # if the current month is between october and march we are in the winter semester
+    semester_type = if (date.month >= 4 && date.month <= 9)
+      "summer"
+    else
+      "winter"
+    end
+
+    if semester_type == "summer"
+      # find the first of april befor the sunday
+      semester_start = Date.new(sunday.year, 4, 1)
+      # find the last day of september after the sunday
+      semester_end = Date.new(sunday.year, 9, 30)
+    else
+
+      # find the first of october before the sunday
+      semester_start = Date.new(sunday.year, 10, 1)
+      # find the last day of march after the sunday
+      semester_end = Date.new(sunday.year + 1, 3, 31)
+    end
+
+    puts "Generate pages for the #{semester_type} semester, from #{semester_start.strftime('%A, %B %-d, %Y')} to #{semester_end.strftime('%A, %B %-d, %Y')} in #{FILE_NAME}"
+    semester_ahead semester_start, semester_end, semester_type
+    begin_new_page :right
   end
 
-  if semester_type == "summer"
-    # find the first of april befor the sunday
-    semester_start = Date.new(sunday.year, 4, 1)
-    # find the last day of september after the sunday
-    semester_end = Date.new(sunday.year, 9, 30)
-  else
-
-    # find the first of october before the sunday
-    semester_start = Date.new(sunday.year, 10, 1)
-    # find the last day of march after the sunday
-    semester_end = Date.new(sunday.year + 1, 3, 31)
-  end
-
-  puts "Generate pages for the #{semester_type} semester, from #{semester_start.strftime('%A, %B %-d, %Y')} to #{semester_end.strftime('%A, %B %-d, %Y')} in #{FILE_NAME}"
-  semester_ahead semester_start, semester_end, semester_type
-  begin_new_page :right
-
-  WEEKS.times do |week|
+  weeks_const.times do |week|
     unless week.zero?
       # ...then the page for the week
       begin_new_page :right
