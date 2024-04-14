@@ -26,7 +26,7 @@ weeks_const = 1
 
 I18n.load_path += Dir[File.join(__dir__, 'config', 'locales', '*.{rb,yml}')]
 I18n.available_locales = [:de, :en]
-I18n.default_locale = :en
+I18n.default_locale = :de
 
 # From https://stackoverflow.com/a/24753003/203673
 #
@@ -612,4 +612,34 @@ Prawn::Document.generate(FILE_NAME, margin: RIGHT_PAGE_MARGINS, print_scaling: :
 
     sunday = sunday.next_day(7)
   end
+
+
+  # generate outline if it is a semester plan
+  if(weeks_const == 27)
+    # which week are we in
+    week_start = date.cweek
+    # find the first monday in that week
+    monday = date.prev_day(date.wday - 1)
+
+    # adjust week length for full weekend plans
+    week_length = 12
+    if FULL_WEEKENDS
+      week_length = 14
+    end
+    puts "Generate outline"
+    outline.define do
+      section(I18n.t('document_title'), destination: 1) do
+        page title: I18n.t('semester_overview'), destination: 1
+        weeks_const.times do |week|
+          first_day = monday + (week * 7)
+          # The `week_str` variable represents a string that combines the localized word "week" with the week number
+          # and the formatted left range of the first day.
+          week_str = I18n.t('week') << " #{(week + week_start)}" + " - #{I18n.l(first_day, format: :left_range)}"
+          page title: "#{week_str} ", destination: (2 + week * week_length)
+        end
+      end
+    end
+  end
+
+  puts("...done!")
 end
