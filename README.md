@@ -1,6 +1,6 @@
 # Generate Time-Block Planner Pages
 
-Forked from [jlorenzetti](https://github.com/jlorenzetti/planner) and [drewish](https://github.com/drewish/planner)
+Forked from pzula/planner who forked from [jlorenzetti](https://github.com/jlorenzetti/planner) and [drewish](https://github.com/drewish/planner)
 for yet another take on [Cal Newport's Time-Block Planner](https://www.timeblockplanner.com). It generates a PDF
 with a week's worth of A5 pages. You can take a look at a [sample](sample.pdf) and see
 what you think.
@@ -18,7 +18,7 @@ Main changes are:
 Assuming you've got [Ruby](http://www.ruby-lang.org/en/) and [Bundler](https://bundler.io)
 installed you can just run:
 ```
-git clone git@github.com:jlorenzetti/planner.git
+git clone git@github.com:sumidu/planner.git
 cd planner
 bundle install
 ```
