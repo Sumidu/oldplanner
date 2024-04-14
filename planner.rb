@@ -4,8 +4,9 @@ require 'prawn'
 require 'prawn/measurement_extensions'
 require 'pry'
 require 'date'
+require 'i18n'
 
-WEEKS = 1
+WEEKS = 2
 HOUR_LABELS = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 HOUR_COUNT = HOUR_LABELS.length
 COLUMN_COUNT = 4
@@ -19,6 +20,11 @@ PAGE_SIZE = "A5"
 # Order is top, right, bottom, left
 LEFT_PAGE_MARGINS = [36, 52, 36, 36]
 RIGHT_PAGE_MARGINS = [36, 36, 36, 52]
+
+
+I18n.load_path += Dir[File.join(__dir__, 'config', 'locales', '*.{rb,yml}')]
+I18n.available_locales = [:de]
+I18n.default_locale = :de
 
 # From https://stackoverflow.com/a/24753003/203673
 #
@@ -74,11 +80,11 @@ def business_days_left_in_year(date)
   days = business_days_between(date, Date.new(date.year, 12, 31))
   case days
   when 0
-    "last work day of the year"
+    "letzter Arbeitstag im Jahr"
   when 1
-    "1 work day left in the year"
+    "1 weiterer Arbeitstag im Jahr"
   else
-    "#{days} work days in the year"
+    "#{days} Arbeitstage im Jahr"
   end
 end
 
@@ -155,18 +161,18 @@ def week_ahead_page first_day, last_day
 
   # Header Left
   grid([0, first_column],[0, last_column]).bounding_box do
-    text "The Week Ahead", inline_format: true, size: 12, character_spacing: -0.75, style: :bold, align: :left
+    text "Die kommende Woche", inline_format: true, size: 12, character_spacing: -0.75, style: :bold, align: :left
   end
   grid([1, first_column],[1, last_column]).bounding_box do
-    range = "#{first_day.strftime('%A, %B %-d')} — #{last_day.strftime('%A, %B %-d, %Y')}"
+    range = "#{I18n.l(first_day, format: '%A, %-d. %B ')} — #{I18n.l(last_day, format: '%A, %-d. %B, %Y')}"
     text range, color: MEDIUM_COLOR, character_spacing: -0.25, align: :left
   end
   # Header Right
   grid([0, 3],[0, last_column]).bounding_box do
-    text first_day.strftime("Week %W"), inline_format: true, size: 12, character_spacing: -0.75, style: :bold, align: :right
+    text first_day.strftime("Woche %W"), inline_format: true, size: 12, character_spacing: -0.75, style: :bold, align: :right
   end
   grid([1, 3],[1, last_column]).bounding_box do
-    text "Quarter #{quarter(first_day)}", color: MEDIUM_COLOR, character_spacing: -0.25, align: :right
+    text "Quartal #{quarter(first_day)}", color: MEDIUM_COLOR, character_spacing: -0.25, align: :right
   end
 
   # Horizontal lines
@@ -199,8 +205,8 @@ def daily_tasks_page date
   # grid.show_all
 
   # Header
-  left_header = date.strftime(DATE_LONG) # date.strftime("Week %W")
-  right_header = date.strftime("%A") # date.strftime("Day %j")
+  left_header = I18n.l(date, format: :long) # date.strftime("Week %W")
+  right_header = I18n.l(date, format: :weekday) # date.strftime("Day %j")
   grid([0, 0],[1, 2]).bounding_box do
     text left_header, size: 12, character_spacing: -0.75, style: :bold, align: :left
   end
@@ -235,7 +241,7 @@ def daily_tasks_page date
   end
   grid([5, 2], [5, 3]).bounding_box do
     translate 6, 0 do
-      text "Ideas:", color: DARK_COLOR, character_spacing: -0.25, style: :bold, valign: :center
+      text "Ideen:", color: DARK_COLOR, character_spacing: -0.25, style: :bold, valign: :center
     end
   end
 
@@ -276,10 +282,10 @@ def daily_calendar_page date
   define_grid(columns: COLUMN_COUNT, rows: header_row_count + body_row_count, gutter: 0)
 
   # Header
-  left_header = date.strftime(DATE_LONG)
+  left_header = I18n.l(date, format: :long)
   # right_header = date.strftime("Day %j")
-  right_header = date.strftime("%A")
-  left_subhed = date.strftime("Quarter #{quarter(date)} Week %W Day %j")
+  right_header = I18n.l(date, format: :weekday)
+  left_subhed = date.strftime("Quartal #{quarter(date)} Woche %W Tag %j")
   right_subhed = business_days_left_in_year(date)
   # right_subhed = business_days_left_in_sprint(date)
   grid([0, first_column],[1, 1]).bounding_box do
@@ -360,8 +366,8 @@ def weekend_page saturday, sunday
       # grid.show_all
 
       # Header
-      left_header = date.strftime("%A")
-      left_sub_header = date.strftime("%B %-d")
+      left_header = I18n.l(date, format: :weekday)
+      left_sub_header = I18n.l(date, format: :day_month)
       grid([0, 0],[0, 1]).bounding_box do
         text left_header, size: 12, character_spacing: -0.25, style: :bold, align: :left
       end
@@ -483,4 +489,3 @@ Prawn::Document.generate(FILE_NAME, margin: RIGHT_PAGE_MARGINS, print_scaling: :
     sunday = sunday.next_day(7)
   end
 end
-
