@@ -2,6 +2,11 @@
 
 I use this planner as a template for GoodNotes to organize my semester.
 
+## Todos
+
+- [] Add monthly pages
+- [] Habit tracking included ?
+
 
 
 
@@ -17,17 +22,17 @@ bundle install
 
 ## Usage
 
-It assumes you want to generate pages for the next week so there are no options:
+Normally, It assumes you want to generate pages for the next week:
 ```
 bundle exec planner.rb
 ```
 
-To generate the summer semester use the first of april as an argument:
+To generate a full plan for the summer semester use the first of April as an argument:
 ```
 bundle exec planner.rb 1/04/2024
 ```
 
-To generate the summer semester use the first of april as an argument:
+To generate the full winter semester use the first of October as an argument:
 ```
 bundle exec planner.rb 1/10/2024
 ```
